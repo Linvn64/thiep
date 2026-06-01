@@ -171,3 +171,52 @@ document.addEventListener('DOMContentLoaded', () => {
 
   patchMusicToggle();
 });
+
+// ── 6. EMAILJS RSVP ──────────────────────────────────
+// ⚠️  Điền 3 thông tin này sau khi đăng ký emailjs.com
+const EMAILJS_SERVICE_ID  = 'service_ih6ep4i';   // ← thay
+const EMAILJS_TEMPLATE_ID = 'template_xqr1s2p';  // ← thay
+const EMAILJS_PUBLIC_KEY  = 'kHQv4Txwm0xsQKjy3';       // ← thay
+const NOTIFY_EMAIL        = 'lethianhlinh2005@gmail.com'; // ← email nhận thông báo
+
+function loadEmailJS() {
+  if (window.emailjs) return Promise.resolve();
+  return new Promise((resolve, reject) => {
+    const s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js';
+    s.onload = () => { emailjs.init(EMAILJS_PUBLIC_KEY); resolve(); };
+    s.onerror = reject;
+    document.head.appendChild(s);
+  });
+}
+
+async function sendRSVPEmail(answer) {
+  try {
+    await loadEmailJS();
+    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+      guest_name: window.guestName || 'Khách',
+      rsvp:       answer === 'yes' ? '✅ Mình sẽ đến!' : '❌ Xin lỗi Giang',
+      time:       new Date().toLocaleString('vi-VN'),
+      to_email:   NOTIFY_EMAIL,
+    });
+    console.log('Email đã gửi');
+  } catch (err) {
+    console.warn('Gửi email thất bại:', err);
+  }
+}
+
+// Override rsvpYes / rsvpNo để gửi email trước khi hiện modal
+(function() {
+  const _origYes = window.rsvpYes;
+  const _origNo  = window.rsvpNo;
+
+  window.rsvpYes = function() {
+    sendRSVPEmail('yes');
+    _origYes && _origYes();
+  };
+
+  window.rsvpNo = function() {
+    sendRSVPEmail('no');
+    _origNo && _origNo();
+  };
+})();

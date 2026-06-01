@@ -304,6 +304,7 @@ function addToCalendar() {
 // ── TRANSITION SCREEN → MAIN ──────────────────────────────────────
 function enterMain(name) {
   guestName = name || 'Bạn';
+    window.guestName = guestName; // thêm dòng này
   guestXung = getXungHo(guestName);
 
   // Update greeting
