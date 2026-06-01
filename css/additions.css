@@ -1,0 +1,102 @@
+/* ════════════════════════════════════════════════════
+   ADDITIONS — paste vào CUỐI file css/style.css
+   ════════════════════════════════════════════════════ */
+
+/* ─── 1. BOKEH ─── */
+#bokeh-bg {
+  position: fixed; inset: 0;
+  z-index: 0; pointer-events: none; overflow: hidden;
+}
+.bokeh-orb {
+  position: absolute; border-radius: 50%;
+  filter: blur(80px); opacity: 0;
+  animation: bokehFloat var(--dur,18s) ease-in-out var(--delay,0s) infinite;
+}
+@keyframes bokehFloat {
+  0%   { opacity:0; transform:translateY(0) scale(1); }
+  20%  { opacity:var(--peak,0.12); }
+  50%  { opacity:var(--peak,0.12); transform:translateY(-40px) scale(1.08); }
+  80%  { opacity:var(--peak,0.12); }
+  100% { opacity:0; transform:translateY(0) scale(1); }
+}
+
+/* ─── 2. GLOW PULSE ─── */
+.invite-main-title .highlight {
+  animation: beatGlow 0.5s ease-in-out infinite alternate;
+  display: block; will-change: transform, text-shadow;
+}
+@keyframes beatGlow {
+  0%   { transform:scale(1); text-shadow: 0 0 8px rgba(212,168,67,.3), 0 0 20px rgba(212,168,67,.1); }
+  100% { transform:scale(1.025); text-shadow: 0 0 16px rgba(242,201,110,.7), 0 0 40px rgba(212,168,67,.4), 0 0 80px rgba(212,168,67,.15); }
+}
+body.music-on .invite-main-title .highlight {
+  animation: beatGlowOn 0.5s ease-in-out infinite alternate;
+}
+@keyframes beatGlowOn {
+  0%   { transform:scale(1); text-shadow: 0 0 10px rgba(212,168,67,.4), 0 0 30px rgba(212,168,67,.2); letter-spacing:0.1em; }
+  100% { transform:scale(1.04); text-shadow: 0 0 20px rgba(242,201,110,.9), 0 0 60px rgba(212,168,67,.6), 0 0 100px rgba(212,168,67,.25); letter-spacing:0.115em; }
+}
+
+/* ─── 3. TICKER ─── */
+.ticker-wrapper {
+  width:100%; overflow:hidden;
+  border-top:1px solid rgba(212,168,67,.2);
+  border-bottom:1px solid rgba(212,168,67,.2);
+  background:rgba(212,168,67,.04);
+  padding:.55rem 0;
+  position:relative; z-index:2;
+  opacity:0; transition:opacity .7s ease;
+  /* margin tách khỏi invite-card */
+  margin-bottom: 1.5rem;
+}
+.ticker-wrapper.visible { opacity:1; }
+.ticker-track {
+  display:flex; gap:0; white-space:nowrap;
+  will-change:transform;
+  /* KHÔNG đặt animation ở đây — JS sẽ inject keyframe động */
+}
+.ticker-track:hover { animation-play-state:paused; }
+.ticker-item {
+  display:inline-flex; align-items:center; gap:.6rem;
+  font-family:var(--font-display); font-size:.6rem;
+  letter-spacing:.25em; color:var(--gold-dim);
+  padding:0 1.5rem; flex-shrink:0;
+}
+.ticker-item .ticker-dot {
+  width:3px; height:3px; background:var(--gold);
+  border-radius:50%; flex-shrink:0; opacity:.6;
+}
+.ticker-item.highlight-item { color:var(--gold); }
+
+/* ─── 4. PHOTO STRIP ─── */
+.photo-strip-section {
+  margin-bottom: 0 !important;
+}
+.photo-strip-track {
+  gap: 1rem !important;
+  padding: 0.5rem 1rem;
+  align-items: center;
+  /* KHÔNG override animation ở đây — JS inject sau */
+}
+.photo-frame {
+  width: 220px !important;
+  height: 290px !important;
+  border-radius: 3px;
+  box-shadow: 0 8px 32px rgba(0,0,0,.5);
+  flex-shrink: 0;
+}
+.photo-frame img {
+  width:100%; height:100%;
+  object-fit:cover;
+  object-position:center top;
+}
+
+/* ─── 5. RSVP BUTTON FIX ─── */
+.rsvp-btn { position:relative; isolation:isolate; }
+.rsvp-btn::before { z-index:-1; }
+
+/* ─── 6. Z-INDEX LAYERING ─── */
+.invite-header, .greeting-band, .photo-strip-section,
+.ticker-wrapper, .invite-card, .rsvp-section, .thankyou-section {
+  position:relative; z-index:2;
+}

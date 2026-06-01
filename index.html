@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <meta name="theme-color" content="#0A0805"/>
+  <title>Hơn cả một lễ tốt nghiệp — Giang</title>
+  <meta property="og:title" content="Hơn cả một lễ tốt nghiệp 🎓"/>
+  <meta property="og:description" content="Giang trân trọng kính mời bạn đến dự lễ tốt nghiệp"/>
+  <link rel="stylesheet" href="css/style.css"/>
+  <link rel="stylesheet" href="css/additions.css"/>
+</head>
+
+<body>
+<div id="bokeh-bg"></div>
+
+<!-- PARTICLE CANVAS -->
+<canvas id="particles-canvas"></canvas>
+
+<!-- ═══════════════════════════════════════
+     INTRO SCREEN
+═══════════════════════════════════════ -->
+<section id="intro-screen" class="screen active">
+  <div class="intro-deco-line"></div>
+
+  <p class="intro-label">✦ Một lời mời đặc biệt ✦</p>
+
+  <h1 class="intro-title">
+    Hơn cả
+    <span>một lễ<br>tốt nghiệp</span>
+  </h1>
+
+  <p class="intro-subtitle">— GIANG · CLASS OF 2026 —</p>
+
+  <div class="name-form-wrapper">
+    <p class="name-question">
+      Trước khi bước vào,<br>
+      cho mình hỏi — <em>tên bạn là gì?</em>
+    </p>
+
+    <div class="name-input-wrap">
+      <input
+        type="text"
+        id="name-input"
+        class="name-input"
+        placeholder="Tên của bạn..."
+        maxlength="40"
+        autocomplete="off"
+        autocorrect="off"
+        spellcheck="false"
+      />
+      <div class="name-input-line"></div>
+    </div>
+
+    <button id="enter-btn" class="enter-btn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <path d="M5 12h14M12 5l7 7-7 7"/>
+      </svg>
+      Vào thiệp mời
+    </button>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     MAIN INVITE SCREEN
+═══════════════════════════════════════ -->
+<section id="main-screen" class="screen">
+
+  <!-- HEADER -->
+  <header class="invite-header">
+    <div class="header-ornament">
+      <div class="ornament-line"></div>
+      <div class="ornament-diamond"></div>
+      <div class="ornament-line right"></div>
+    </div>
+
+    <p class="event-tag">✦ Lễ tốt nghiệp · Graduation Ceremony · 2026 ✦</p>
+
+    <h1 class="invite-main-title">
+      COME TO
+      <span class="highlight">MY SCHOOL</span>
+    </h1>
+
+    <p class="invite-subtitle-tag">— Hơn cả một lễ tốt nghiệp —</p>
+  </header>
+
+  <!-- GREETING -->
+  <div class="greeting-band">
+    <p class="greeting-text" id="greeting-text">
+      Trân trọng kính mời bạn đến dự lễ tốt nghiệp! 🎓
+    </p>
+  </div>
+
+  <!-- PHOTO STRIP -->
+  <div class="photo-strip-section">
+    <!-- Upload button -->
+    <input type="file" id="photo-upload-input" accept="image/*" multiple style="display:none"/>
+    <button id="upload-btn" class="upload-strip-btn" title="Thêm ảnh">+ Ảnh</button>
+
+    <div id="photo-strip-track" class="photo-strip-track"></div>
+  </div>
+
+  <!-- INVITE CARD -->
+  <div class="invite-card">
+
+    <!-- Lời mời -->
+    <div class="card-section">
+      <div class="section-label">Lời mời</div>
+      <p class="invite-body-text">
+        Mình — <strong>Giang</strong> — xin trân trọng kính mời bạn
+        đến chung vui cùng mình trong buổi lễ tốt nghiệp,
+        một dấu mốc mà mình đã nỗ lực không ngừng để chạm tới.
+        <br/><br/>
+        Sự hiện diện của bạn là món quà ý nghĩa nhất với mình! 💛
+      </p>
+    </div>
+
+    <!-- Thời gian -->
+    <div class="card-section">
+      <div class="section-label">Thời gian</div>
+      <div class="datetime-block">
+        <a class="dt-item" onclick="addToCalendar()" title="Thêm vào lịch">
+          <div class="dt-icon">📅</div>
+          <span class="dt-label">Ngày</span>
+          <span class="dt-value">21 / 06</span>
+          <span class="dt-sub">Chủ nhật · 2026</span>
+        </a>
+        <a class="dt-item" onclick="addToCalendar()" title="Thêm vào lịch">
+          <div class="dt-icon">🕗</div>
+          <span class="dt-label">Giờ</span>
+          <span class="dt-value">08:00</span>
+          <span class="dt-sub">Sáng · buổi lễ</span>
+        </a>
+      </div>
+      <p style="font-size:0.68rem; color:rgba(212,168,67,0.5); text-align:center; margin-top:0.6rem; letter-spacing:0.1em;">
+        ↑ Bấm để thêm vào Google Calendar
+      </p>
+    </div>
+
+    <!-- Địa điểm -->
+    <div class="card-section">
+      <div class="section-label">Địa điểm</div>
+      <a class="location-block" onclick="openMap()" title="Mở Google Maps">
+        <div class="location-icon">📍</div>
+        <div class="location-text">
+          <div class="location-name">HỘI TRƯỜNG HA11</div>
+          <div class="location-address">
+            Tầng 3, HA11<br/>
+            Ngõ 218 đường Lĩnh Nam<br/>
+            Hoàng Mai, Hà Nội
+          </div>
+          <div class="location-cta">↗ Mở Google Maps</div>
+        </div>
+      </a>
+    </div>
+
+    <!-- Lời cảm ơn -->
+    <div class="card-section">
+      <div class="section-label">Từ Giang</div>
+      <p class="invite-body-text">
+        Cảm ơn bạn đã luôn ở đây, đã cổ vũ và đồng hành cùng mình
+        qua bao chặng đường. Ngày này mình muốn được chia sẻ cùng bạn —
+        người mình trân quý.
+      </p>
+    </div>
+
+  </div>
+
+  <!-- RSVP -->
+  <div class="rsvp-section">
+    <p class="rsvp-label">· XÁC NHẬN THAM DỰ ·</p>
+    <div class="rsvp-buttons">
+      <button class="rsvp-btn rsvp-yes" onclick="rsvpYes()">
+        ✓ Mình sẽ đến!
+      </button>
+      <button class="rsvp-btn rsvp-no" onclick="rsvpNo()">
+        ✕ Xin lỗi Giang
+      </button>
+    </div>
+  </div>
+
+  <!-- THANK YOU -->
+  <div class="thankyou-section">
+    <div class="thankyou-ornament">
+      <div class="ornament-line"></div>
+      <span>✦</span>
+      <div class="ornament-line right"></div>
+    </div>
+    <p class="thankyou-text">
+      Dù bạn có đến hay không, mình vẫn biết ơn vì đã có bạn
+      trong cuộc đời này. Cảm ơn bạn rất nhiều!
+    </p>
+    <p class="thankyou-sign">— GIANG · 2026 —</p>
+  </div>
+
+</section>
+
+<!-- ═══ MUSIC INDICATOR ═══ -->
+<div id="music-indicator" class="music-indicator" title="Bật/Tắt nhạc">
+  <div class="music-bars">
+    <div class="music-bar"></div>
+    <div class="music-bar"></div>
+    <div class="music-bar"></div>
+    <div class="music-bar"></div>
+  </div>
+  <!-- <span class="music-label">NHẠC</span> -->
+</div>
+
+<!-- ═══ MODAL ═══ -->
+<div id="modal" class="modal-overlay">
+  <div class="modal-box">
+    <div class="modal-icon" id="modal-icon">🎓</div>
+    <div class="modal-title" id="modal-title">THÔNG BÁO</div>
+    <div class="modal-body" id="modal-body"></div>
+    <button class="modal-close" onclick="closeModal()">ĐÓNG LẠI</button>
+  </div>
+</div>
+
+<!-- ═══ TOAST ═══ -->
+<!-- <div id="toast" class="toast"></div> -->
+
+<script src="js/app.js"></script>
+ <script src="js/additions.js"></script>
+</body>
+</html>
