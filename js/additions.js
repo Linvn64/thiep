@@ -32,7 +32,8 @@ function tryExtensions(base) {
 }
 
 function buildFrameHTMLSafe(src) {
-  return `<div class="photo-frame"><img src="${src}" alt="Ảnh lễ tốt nghiệp" loading="lazy"/></div>`;
+  // decoding="async" → không block main thread khi giải mã ảnh
+  return `<div class="photo-frame"><img src="${src}" alt="Ảnh lễ tốt nghiệp" loading="lazy" decoding="async"/></div>`;
 }
 
 // Inject CSS keyframe động rồi áp vào element
@@ -50,6 +51,25 @@ function applyCSSScroll(el, halfW, speed) {
   el.style.willChange = 'transform';
 }
 
+// Compress ảnh từ assets/ về 400px trước khi render vào strip
+// → ảnh gốc HEIC/JPG trên mobile thường 3-5MB, sau compress còn ~100KB
+function compressImageFromUrl(url, maxWidth = 400) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      const ratio = Math.min(1, maxWidth / img.width);
+      canvas.width  = img.width  * ratio;
+      canvas.height = img.height * ratio;
+      canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+      resolve(canvas.toDataURL('image/jpeg', 0.75));
+    };
+    img.onerror = () => resolve(url); // fallback: dùng URL gốc nếu lỗi
+    img.src = url;
+  });
+}
+
 async function setupHardcodedPhotos() {
   const track     = document.getElementById('photo-strip-track');
   const uploadBtn = document.getElementById('upload-btn');
@@ -59,24 +79,27 @@ async function setupHardcodedPhotos() {
   const photos = await resolvePhotos();
   if (!photos.length) return;
 
+  // Compress song song toàn bộ ảnh → không đợi từng cái
+  const compressed = await Promise.all(photos.map(src => compressImageFromUrl(src, 400)));
+
   const FRAME_W   = 220 + 16;
   const minFrames = Math.ceil((window.innerWidth * 3) / FRAME_W);
-  const setSize   = photos.length;
+  const setSize   = compressed.length;
   let setsNeeded  = Math.ceil(minFrames / setSize) + 1;
   if (setsNeeded % 2 !== 0) setsNeeded++;
 
-  const allFrames = Array(setsNeeded).fill(photos).flat();
+  const allFrames = Array(setsNeeded).fill(compressed).flat();
   track.innerHTML = allFrames.map(buildFrameHTMLSafe).join('');
-  track.style.animation = 'none'; // reset trước
+  track.style.animation = 'none';
   track.style.transform = 'translateX(0)';
 
   requestAnimationFrame(() => requestAnimationFrame(() => {
     const halfW = track.scrollWidth / 2;
-    applyCSSScroll(track, halfW, 80); // 80px/s
+    applyCSSScroll(track, halfW, 80);
   }));
 }
 
-// Override startSeamlessStrip gốc (dùng RAF loop) → không cần nữa
+// Override startSeamlessStrip gốc (RAF loop) → không cần nữa khi dùng CSS animation
 window.startSeamlessStrip = function() {};
 
 // ── 2. BOKEH ─────────────────────────────────────────
@@ -133,10 +156,9 @@ function injectTicker() {
   wrapper.appendChild(trackEl);
   photoSection.insertAdjacentElement('afterend', wrapper);
 
-  // Đo và inject animation sau render
   requestAnimationFrame(() => requestAnimationFrame(() => {
     const halfW = trackEl.scrollWidth / 2;
-    applyCSSScroll(trackEl, halfW, 120); // ticker nhanh hơn ảnh
+    applyCSSScroll(trackEl, halfW, 120);
   }));
 
   return wrapper;
@@ -173,11 +195,10 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ── 6. EMAILJS RSVP ──────────────────────────────────
-// ⚠️  Điền 3 thông tin này sau khi đăng ký emailjs.com
-const EMAILJS_SERVICE_ID  = 'service_ih6ep4i';   // ← thay
-const EMAILJS_TEMPLATE_ID = 'template_xqr1s2p';  // ← thay
-const EMAILJS_PUBLIC_KEY  = 'kHQv4Txwm0xsQKjy3';       // ← thay
-const NOTIFY_EMAIL        = 'lethianhlinh2005@gmail.com'; // ← email nhận thông báo
+const EMAILJS_SERVICE_ID  = 'service_ih6ep4i';
+const EMAILJS_TEMPLATE_ID = 'template_xqr1s2p';
+const EMAILJS_PUBLIC_KEY  = 'kHQv4Txwm0xsQKjy3';
+const NOTIFY_EMAIL        = 'lethianhlinh2005@gmail.com';
 
 function loadEmailJS() {
   if (window.emailjs) return Promise.resolve();
@@ -205,7 +226,6 @@ async function sendRSVPEmail(answer) {
   }
 }
 
-// Override rsvpYes / rsvpNo để gửi email trước khi hiện modal
 (function() {
   const _origYes = window.rsvpYes;
   const _origNo  = window.rsvpNo;
